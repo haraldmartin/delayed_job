@@ -12,4 +12,9 @@ namespace :jobs do
   task :work => [:merb_env, :environment] do
     Delayed::Worker.new(:min_priority => ENV['MIN_PRIORITY'], :max_priority => ENV['MAX_PRIORITY']).start
   end
+  
+  desc "Run a delayed_job worker once."
+  task :once => [:merb_env, :environment] do
+    Delayed::Worker.new(:min_priority => ENV['MIN_PRIORITY'], :max_priority => ENV['MAX_PRIORITY']).once
+  end
 end

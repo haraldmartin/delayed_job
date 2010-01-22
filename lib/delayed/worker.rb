@@ -40,7 +40,7 @@ module Delayed
       @name = val
     end
 
-    def start
+    def start(once = false)
       say "*** Starting job worker #{name}"
 
       trap('TERM') { say 'Exiting...'; $exit = true }
@@ -58,7 +58,7 @@ module Delayed
         break if $exit
 
         if count.zero?
-          sleep(@@sleep_delay)
+          once ? break : sleep(@@sleep_delay)
         else
           say "#{count} jobs processed at %.4f j/s, %d failed ..." % [count / realtime, result.last]
         end
@@ -69,6 +69,12 @@ module Delayed
     ensure
       Delayed::Job.clear_locks!(name)
     end
+    
+    def once
+      say "*** Running job worker #{name} once"
+      start(true)
+    end
+    
     
     # Do num jobs and return stats on success/failure.
     # Exit early if interrupted.
